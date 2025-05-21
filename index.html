@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Project form validation</title>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"
+        integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+    <style>
+        body {
+            font-style: italic;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 130%;
+        }
+
+        label {
+            width: 200px;
+            float: left;
+            position: relative;
+            top: 12px;
+            display: inline-flex;
+        }
+
+        .wrapper {
+            margin: 0 auto;
+            width: 550px;
+        }
+
+        input {
+            width: 320px;
+            float: left;
+            border: 1px solid black;
+            border-radius: 5px;
+            margin-top: 10px;
+            padding: 5px 5px 12px 5px;
+            position: relative;
+        }
+
+        .formelement {
+            margin-top: 50px;
+            position: relative;
+        }
+
+        #submitbutton {
+            width: 130px;
+            margin-left: 200px;
+            margin-top: 10px;
+        }
+
+        #errors {
+            color: red;
+            font-size: 90%;
+        }
+
+        #success {
+            color: green;
+            font-size: 90%;
+        }
+
+         .password-toggle {
+            position: absolute;
+           
+            cursor: pointer;
+            font-size: 90%;
+            user-select: none;
+        } 
+
+        .password-toggle{
+            position: absolute;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div id="errors"></div>
+    <div id="success"></div>
+    <div class="wrapper">
+        <div class="formelement">
+            <label for="Email">Email</label>
+            <input type="text" id="Email" name="Email">
+        </div>
+        <div class="formelement">
+            <label for="PhoneNumber">Phone Number</label>
+            <input type="text" id="PhoneNumber" name="PhoneNumber" maxlength="10">
+        </div>
+        <div class="formelement">
+            <label for="Password">Password</label>
+            <input type="password" id="Password" name="Password">
+            <span class="password-toggle" onclick="togglePassword('Password')">Show</span>
+        </div>
+        <div class="formelement">
+            <label for="ConfirmPassword">Confirm Password</label>
+            <input type="password" id="ConfirmPassword" name="ConfirmPassword">
+            <span class="password-toggle" onclick="togglePassword('ConfirmPassword')">Show</span>
+        </div>
+        <input id="submitbutton" type="button" value="Submit">
+    </div>
+    <script>
+        var errormessage = "";
+        var missingfield = "";
+
+        function isEmail(email) {
+            var regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return regex.test(email);
+        }
+
+        function hasUpperCase(str) {
+            return /[A-Z]/.test(str);
+        }
+
+        function hasLowerCase(str) {
+            return /[a-z]/.test(str);
+        }
+
+        function hasSpecialChar(str) {
+            return /[!@#$%^&*()_+\-=\\[\]{};':"\\|,.<>\/?]/.test(str);
+        }
+
+        function togglePassword(inputId) {
+            var passwordInput = document.getElementById(inputId);
+            var toggleButton = passwordInput.nextElementSibling;  
+            if (passwordInput.type === "password") {
+                passwordInput.type = "text";
+                toggleButton.textContent = "Hide"; 
+            } else {
+                passwordInput.type = "password";
+                toggleButton.textContent = "Show"; 
+            }
+        }
+
+        $("#submitbutton").click(function() {
+            errormessage = "";
+            missingfield = "";
+
+            
+            if ($("#Email").val() == "") {
+                missingfield += "<p>Please fill the email.</p>";
+            } else if (!isEmail($("#Email").val())) {
+                errormessage += "<p>Please enter a valid email address.</p>";
+            }
+
+            
+            if ($("#PhoneNumber").val() == "") {
+                missingfield += "<p>Please fill the phone number.</p>";
+            } else if (!$.isNumeric($("#PhoneNumber").val())) {
+                errormessage += "<p>Phone number should only contain digits.</p>";
+            } else if ($("#PhoneNumber").val().length > 10) {
+                errormessage += "<p>Phone number should not be more than 10 digits.</p>";
+            }
+
+            
+            if ($("#Password").val() == "") {
+                missingfield += "<p>Please fill the password.</p>";
+            } else if ($("#Password").val().length < 8 || $("#Password").val().length > 15) {
+                errormessage += "<p>Password should be between 8 and 15 characters long.</p>";
+            } else if (!hasUpperCase($("#Password").val())) {
+                errormessage += "<p>Password should contain at least one uppercase letter.</p>";
+            } else if (!hasLowerCase($("#Password").val())) {
+                errormessage += "<p>Password should contain at least one lowercase letter.</p>";
+            } else if (!hasSpecialChar($("#Password").val())) {
+                errormessage += "<p>Password should contain at least one special character.</p>";
+            }
+
+            
+            if ($("#ConfirmPassword").val() == "") {
+                missingfield += "<p>Please fill the confirm password.</p>";
+            } else if ($("#Password").val() != $("#ConfirmPassword").val()) {
+                errormessage += "<p>Passwords do not match.</p>";
+            }
+
+            
+            if (errormessage == "" && missingfield == "") {
+                $("#success").html("You are registered!");
+                $("#errors").html("");
+            } else {
+                $("#errors").html(errormessage + missingfield);
+                $("#success").html("");
+            }
+        });
+    </script>
+
+</body>
+
+</html>
